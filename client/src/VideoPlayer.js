@@ -66,21 +66,20 @@ function VideoPlayer() {
   };
   const handleResetVideo = () => {
     videoRef.current.currentTime = 0;
-    videoRef.current.currentTime = 0;
     socketRef.current.emit("reset");
     console.log("Reset Video");
   };
   const handleSkipForw = (value) => () => {
     videoRef.current.currentTime += value;
-    videoRef.current.currentTime += value;
     socketRef.current.emit("skip", value);
+    socketRef.current.emit("current", videoRef.current.currentTime);
     console.log("Skip 5s");
   };
 
   const handleSkipBack = (value) => () => {
     videoRef.current.currentTime += value;
-    videoRef.current.currentTime += value;
     socketRef.current.emit("skip", value);
+    socketRef.current.emit("current", videoRef.current.currentTime);
     console.log("Skip -5s");
   };
 
