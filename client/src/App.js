@@ -6,6 +6,8 @@ import VideoPlayer from "./VideoPlayer";
 // import socketIOClient from "socket.io-client";
 // const host = "http://localhost:4000";
 
+
+<h2>RẠP CHIẾU PHIM</h2>
 function App() {
   return (
     <div className="App">
@@ -18,5 +20,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;
