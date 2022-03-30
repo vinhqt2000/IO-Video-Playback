@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  </head>
+  <body>
+    <div>
+      <h4>Hello</h4>
+      <video id="video1" name="video1" style="height: 200px" controls>
+        <source
+          src="https://www.w3schools.com/html/mov_bbb.mp4"
+          type="video/mp4"
+        />
+      </video>
+      <div>
+        <b id="currentTime">0:00</b>
+      </div>
+      <!-- <p class="container range-field">
+        <input type="range" id="slidebar" min="0" max="100" value="0" />
+        <br />
+      </p> -->
+      <button id="rew" onclick="skipBack(-5)">Về 5s</button>
+
+      <button id="fastFwd" onclick="skipFor(5)" class="btn btn-block">
+        Tua 5s
+      </button>
+      <button id="restart" onclick="restart()" class="btn btn-primary">
+        Reset
+      </button>
+      <button id="play" onclick="PlayVideo()">Phát</button>
+      <button id="pause" onclick="pauseVideo()">Dừng</button>
+    </div>
+
+    <script type="text/javascript">
+      var video = document.getElementById("video1");
+
+      ////////////////////////
+      // Connect
+      const socket = io.connect("http://localhost:8080/");
+      socket.on("connect", function (data) {
+        socket.emit("join", "hello world from client");
+      });
+
+      /////////////////
+      socket.on("current", function (data) {
+        video.currentTime = data;
+      });
+
+      /////////////////////////////////////////////////////
+      // PLAY- PAUSE
+      socket.on("playPause", function (data) {
+        if (data == "play") {
+          video.play();
+        } else if (data == "pause") {
+          video.pause();
+        }
+      });
+      function PlayVideo() {
+        video.play();
+        socket.emit("playPause", "play");
+        socket.emit("current", video.currentTime);
+      }
+      function pauseVideo() {
+        video.pause();
+        socket.emit("playPause", "pause");
+        socket.emit("current", video.currentTime);
+      }
+      /////////////////////////////////////////////////////////
+      //SKIP
+      socket.on("skip", function (value) {
+        video.currentTime += value;
+      });
+      function skipFor(value) {
+        video.currentTime += value;
+        socket.emit("skip", value);
+        console.log(value);
+      }
+      function skipBack(value) {
+        video.currentTime += value;
+        socket.emit("skip", value);
+        console.log(value);
+      }
+      ////////////////////////////////////////////////
+      socket.on("reset", function () {
+        video.currentTime = 0;
+      });
+
+      function restart() {
+        video.currentTime = 0;
+        socket.emit("reset");
+      }
+      ////////////////////////////////
+
+      /////////////
+      function formatDur(duration) {
+        duration = Math.round(duration);
+        var minute = Math.floor(duration / 60);
+        var second = Math.floor(duration - minute * 60);
+        second = second < 10 ? "0" + second : second;
+
+        return minute + ":" + second;
+      }
+
+      video.ontimeupdate = function () {
+        CurrentTimeFunction();
+      };
+      function CurrentTimeFunction() {
+        document.getElementById("currentTime").innerHTML = formatDur(
+          video.currentTime
+        );
+      }
+    </script>
+  </body>
+</html>
